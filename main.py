@@ -12,7 +12,6 @@ import re
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-#TODO: Check if math.tanh == (hand written formula)
 
 class Main:
     def __init__(self):
@@ -23,13 +22,13 @@ class Main:
         self.DELTA = 0.85
 
         self.info_content()
-    
+
 
     def info_content(self):
         self.N = 0
         self.brown_freqs = {}
 
-        for sent in brown.sents:
+        for sent in brown.sents():
             for word in sent:
                 word = word.lower()
                 if word not in self.brown_freqs:
@@ -37,6 +36,7 @@ class Main:
                 self.brown_freqs[word] = self.brown_freqs[word] + 1
                 self.N += 1
     
+
     def get_best_synset_pair(self, word1, word2):
         synsets_word1 = wn.synsets(word1)
         synsets_word2 = wn.synsets(word2)
@@ -78,8 +78,6 @@ class Main:
 
         return np.exp(-dist * self.ALPHA)
     
-    def hyperbolic_ctg(self, val):
-        return (math.exp(self.BETA * val) - math.exp(- self.BETA * val)) / (math.exp(self.BETA * val) + math.exp(- self.BETA * val))
 
     def hierarchy_dist(self, synset1, synset2):
         if synset1 is None or synset2 is None:
@@ -87,9 +85,20 @@ class Main:
         
         if synset1 == synset2:
             h_dist = max([x[1] for x in synset1.hypernym_distances()])
-            return math.tanh(h_dist)
+            return math.tanh(h_dist * self.BETA)
         
-        pass
+        hypernums1  = {x[0]: x[1] for x in synset1.hypernym_distances()}
+        hypernums2  = {x[0]: x[1] for x in synset2.hypernym_distances()}
+        lcs_candidates = set(hypernums1.keys()).intersection(set(hypernums2.keys()))
+
+        if len(lcs_candidates) == 0:
+            return math.tanh(0)
+        
+        lcs_dists = []
+        for lcs_candidate in lcs_candidates:
+            lcs_dists.append(max([hypernums1[lcs_candidate], hypernums2[lcs_candidate]]))
+        
+        return math.tanh(max(lcs_dists) * self.BETA)
 
 
     def most_similar_words(self):
@@ -98,7 +107,7 @@ class Main:
     
 
 if __name__ == "__main__":
-    main = Main()
+    # main = Main()
     # print(f"BEST PAIR: {main.get_best_synset_pair('RAM', 'memory')}")
 
     # synsets_word1 = wn.synsets("RAM")
@@ -106,7 +115,11 @@ if __name__ == "__main__":
     # print( set([str(x.name()) for x in synsets_word1[0].lemmas()]))
 
     synsets_word1 = wn.synsets("RAM")
-    fsynset = synsets_word1[0]
-    ssynset = synsets_word1[1]
+    fsynset1 = synsets_word1[0]
+    print(fsynset1.hypernym_distances())
 
+    print()
 
+    synsets_word2 = wn.synsets("memory")
+    fsynset2 = synsets_word2[0]
+    print(fsynset2.hypernym_distances())
