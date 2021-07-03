@@ -12,6 +12,7 @@ import re
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
+#TODO: Check if math.tanh == (hand written formula)
 
 class Main:
     def __init__(self):
@@ -108,4 +109,4 @@ if __name__ == "__main__":
     fsynset = synsets_word1[0]
     ssynset = synsets_word1[1]
 
-    print(f"{synset.shortest_path_distance(ssynset)}")
+
