@@ -76,10 +76,20 @@ class Main:
             return 1
 
         return np.exp(-dist * self.ALPHA)
+    
+    def hyperbolic_ctg(self, val):
+        return (math.exp(self.BETA * val) - math.exp(- self.BETA * val)) / (math.exp(self.BETA * val) + math.exp(- self.BETA * val))
 
-
-    def hierarchy_dist(self):
+    def hierarchy_dist(self, synset1, synset2):
+        if synset1 is None or synset2 is None:
+            return sys.maxsize()
+        
+        if synset1 == synset2:
+            h_dist = max([x[1] for x in synset1.hypernym_distances()])
+            return math.tanh(h_dist)
+        
         pass
+
 
     def most_similar_words(self):
         pass
@@ -98,4 +108,4 @@ if __name__ == "__main__":
     fsynset = synsets_word1[0]
     ssynset = synsets_word1[1]
 
-    print(fsynset.shortest_path_distance(ssynset))
+    print(f"{synset.shortest_path_distance(ssynset)}")
