@@ -12,6 +12,7 @@ import re
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
+# TODO: Razumeti implementaciju hierarchy_dist i potencijalno popraviti 
 
 class Main:
     def __init__(self):
@@ -36,7 +37,6 @@ class Main:
                 self.brown_freqs[word] = self.brown_freqs[word] + 1
                 self.N += 1
     
-
     def get_best_synset_pair(self, word1, word2):
         synsets_word1 = wn.synsets(word1)
         synsets_word2 = wn.synsets(word2)
@@ -114,12 +114,18 @@ if __name__ == "__main__":
     # print(synsets_word1[0])
     # print( set([str(x.name()) for x in synsets_word1[0].lemmas()]))
 
-    synsets_word1 = wn.synsets("RAM")
-    fsynset1 = synsets_word1[0]
-    print(fsynset1.hypernym_distances())
+    synsets_word1 = wn.synsets("RAM")[0]
+    # fsynset1 = synsets_word1[0]
+    # print(fsynset1.hypernym_distances())
+    # print( set([str(x.name()) for x in fsynset1.lemmas()]))
+    print(synsets_word1.root_hypernyms())
 
     print()
 
-    synsets_word2 = wn.synsets("memory")
-    fsynset2 = synsets_word2[0]
-    print(fsynset2.hypernym_distances())
+    synsets_word2 = wn.synsets("memory")[0]
+    # fsynset2 = synsets_word2[0]
+    # print(fsynset2.hypernym_distances())
+    print(synsets_word2.root_hypernyms())
+
+    synsets_word_100 = wn.synsets("number")[0]
+    print(synsets_word_100.root_hypernyms())
