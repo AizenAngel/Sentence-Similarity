@@ -144,7 +144,7 @@ class Main:
         return semantic_vector
 
 
-    def semantic_similarity(self, sentence1, sentence2):
+    def get_semantic_similarity(self, sentence1, sentence2):
         words1_set = set(nltk.tokenize(sentence1))
         words2_set = set(nltk.tokenize(sentence2))
         joined_words_set = words1_set.union(words2_set)
@@ -178,6 +178,9 @@ class Main:
 
         return 1 - (LA.norm(word_order_vector1 - word_order_vector2) / LA.norm(word_order_vector1 + word_order_vector2))
 
+
+    def get_similarity(self, sentence1, sentence2):
+        return self.DELTA * self.get_word_order_similarity(sentence1, sentence2) * self.get_semantic_similarity(sentence1, sentence2)
 
 
 if __name__ == "__main__":
