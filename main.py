@@ -7,6 +7,7 @@ import nltk
 import sys
 from nltk.corpus import stopwords
 import numpy as np
+import numpy.linalg as LA
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
 from sklearn.model_selection import train_test_split
@@ -166,6 +167,17 @@ class Main:
                 word_order_vector[id] = joined_words.index(most_sym_word) if max_sym > self.ETA else 0
         
         return word_order_vector
+
+
+    def get_word_order_similarity(self, sentence1, sentence2):
+        words1 = nltk.word_tokenize(sentence1)
+        words2 = nltk.word_tokenize(sentence2)
+        joined_words = list(set(words1).union(set(words2)))         
+        word_order_vector1 = self.get_word_order_similarity(words1, joined_words)
+        word_order_vector2 = self.get_word_order_similarity(words2, joined_words)
+
+        return 1 - (LA.norm(word_order_vector1 - word_order_vector2) / LA.norm(word_order_vector1 + word_order_vector2))
+
 
 
 if __name__ == "__main__":
