@@ -154,6 +154,19 @@ class Main:
         return np.dot(sem_vec1, sem_vec2.T) / (np.linalg.norm(sem_vec1) * np.linalg.norm(sem_vec2))
 
 
+    def get_word_order_vector(self, words, joined_words):
+
+        word_order_vector = np.zeros(len(joined_words))
+
+        for (id, joined_word) in enumerate(joined_words):
+            if joined_word in words:
+                word_order_vector[id] = joined_words.index(joined_word)
+            else:
+                most_sym_word, max_sym = self.get_most_similar_word(joined_word, words)
+                word_order_vector[id] = joined_words.index(most_sym_word) if max_sym > self.ETA else 0
+        
+        return word_order_vector
+
 
 if __name__ == "__main__":
     # main = Main()
