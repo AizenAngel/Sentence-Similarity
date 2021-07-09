@@ -116,7 +116,7 @@ class Main:
 
 
 
-    def most_similar_words(self, word, word_set):
+    def get_most_similar_word(self, word, word_set):
         max_sym = -1
         sym_word = None
         for ref_word in word_set:
@@ -130,13 +130,17 @@ class Main:
 
     def get_semantic_vectors(self, words, joined_words_set):
         
-        # semantic_vector = np.zeros(len(joined_words_set))
+        semantic_vector = np.zeros(len(joined_words_set))
         
-        # for (id, joined_word) in enumerate(joined_words_set):
-        #     if joined_word in words:
-        #         semantic_vector[id] = self.get_info_content_about_word(joined_word) ** 2
-        #     else:
-        pass
+        for (id, joined_word) in enumerate(joined_words_set):
+            if joined_word in words:
+                semantic_vector[id] = self.get_info_content_about_word(joined_word) ** 2
+            else:
+                _, max_sym = self.get_most_similar_word(joined_word, words)
+                max_sym = 0 if max_sym < self.PHI else max_sym
+                semantic_vector[id] = max_sym ** 2
+        
+        return semantic_vector
 
 
 
