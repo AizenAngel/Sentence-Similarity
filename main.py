@@ -79,7 +79,7 @@ class Main:
         return np.exp(-dist * self.ALPHA)
     
 
-    def hierarchy_dist(self, synset1, synset2):
+    def get_hierarchy_dist(self, synset1, synset2):
         if synset1 is None or synset2 is None:
             return sys.maxsize()
         
@@ -101,10 +101,26 @@ class Main:
         return math.tanh(max(lcs_dists) * self.BETA)
 
 
-    def most_similar_words(self):
-        pass
+    def get_word_similarity(self, word1, word2):
+        synset_pair = self.get_best_synset_pair(word1, word2)
+        hierarchy_dist_est = self.get_hierarchy_dist(synset_pair[0], synset_pair[1])
+        length_dist_est = self.get_length_dist(synset_pair[0], synset_pair[1])
 
-    
+        return hierarchy_dist_est * length_dist_est
+
+
+
+    def most_similar_words(self, word, word_set):
+        max_sym = -1
+        sym_word = None
+        for ref_word in word_set:
+            sym = self.get_word_similarity(word, ref_word)
+            if sym > max_sym:
+                sym_word = ref_word
+                max_sym = sym
+
+        return word, sym_word
+
 
 if __name__ == "__main__":
     # main = Main()
