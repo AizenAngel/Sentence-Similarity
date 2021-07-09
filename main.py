@@ -36,7 +36,13 @@ class Main:
                     self.brown_freqs[word] = 1 # TODO  Was 0
                 self.brown_freqs[word] = self.brown_freqs[word] + 1
                 self.N += 1
+
+
+    def get_info_content_about_word(self, word):
+        word = word.lower()
+        return 0 if word not in self.brown_freqs else self.brown_freqs[word] 
     
+
     def get_best_synset_pair(self, word1, word2):
         synsets_word1 = wn.synsets(word1)
         synsets_word2 = wn.synsets(word2)
@@ -50,7 +56,7 @@ class Main:
         for synset1 in synsets_word1:
             for synset2 in synsets_word2:
                 similarity = wn.path_similarity(synset1, synset2)
-                print(f"{synset1}, {synset2} {similarity}")
+                #print(f"{synset1}, {synset2} {similarity}")
                 if similarity > max_sim:
                     max_sim = similarity
                     best_synsets = (synset1, synset2)
@@ -119,7 +125,19 @@ class Main:
                 sym_word = ref_word
                 max_sym = sym
 
-        return word, sym_word
+        return sym_word, max_sym
+
+
+    def get_semantic_vectors(self, words, joined_words_set):
+        
+        # semantic_vector = np.zeros(len(joined_words_set))
+        
+        # for (id, joined_word) in enumerate(joined_words_set):
+        #     if joined_word in words:
+        #         semantic_vector[id] = self.get_info_content_about_word(joined_word) ** 2
+        #     else:
+        pass
+
 
 
 if __name__ == "__main__":
