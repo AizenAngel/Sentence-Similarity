@@ -128,7 +128,7 @@ class Main:
         return sym_word, max_sym
 
 
-    def get_semantic_vectors(self, words, joined_words_set):
+    def get_semantic_vector(self, words, joined_words_set):
         
         semantic_vector = np.zeros(len(joined_words_set))
         
@@ -141,6 +141,17 @@ class Main:
                 semantic_vector[id] = max_sym ** 2
         
         return semantic_vector
+
+
+    def semantic_similarity(self, sentence1, sentence2):
+        words1_set = set(nltk.tokenize(sentence1))
+        words2_set = set(nltk.tokenize(sentence2))
+        joined_words_set = words1_set.union(words2_set)
+
+        sem_vec1 = self.get_semantic_vector(words1_set, joined_words_set)
+        sem_vec2 = self.get_semantic_vector(words2_set, joined_words_set)
+
+        return np.dot(sem_vec1, sem_vec2.T) / (np.linalg.norm(sem_vec1) * np.linalg.norm(sem_vec2))
 
 
 
