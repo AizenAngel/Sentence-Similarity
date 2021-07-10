@@ -158,7 +158,9 @@ class Main:
 
 
     def get_word_order_vector(self, words, joined_words):
-
+        print(words)
+        print(joined_words)
+        print()
         word_order_vector = np.zeros(len(joined_words))
 
         for (id, joined_word) in enumerate(joined_words):
@@ -182,7 +184,13 @@ class Main:
 
 
     def get_similarity(self, sentence1, sentence2):
-        return self.DELTA * self.get_word_order_similarity(sentence1, sentence2) + (1-self.DELTA) * self.get_semantic_similarity(sentence1, sentence2)
+        word_order_similarity = self.DELTA * self.get_word_order_similarity(sentence1, sentence2)
+        semantic_similarity = (1 - self.DELTA) * self.get_semantic_similarity(sentence1, sentence2)
+
+        print(f" Word order similarity: {word_order_similarity}, semantic similarity: {semantic_similarity}")
+        print()
+
+        return  word_order_similarity + semantic_similarity 
 
 
 if __name__ == "__main__":
@@ -192,3 +200,56 @@ if __name__ == "__main__":
                                 str('A quick brown dog jumps over the lazy fox.')))
 
     print(main.get_similarity(str("A quick brown dog."), str('A slow brown dog')))
+
+"""
+SAME TEST CASES, DIFFERENT OUTPUTS!
+"""
+
+"""
+
+Calculating word frequencies for Brown Dataset...
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████| 57340/57340 [00:03<00:00, 17662.90it/s]
+['A', 'quick', 'brown', 'dog', 'jumps', 'over', 'the', 'lazy', 'fox', '.']
+['fox', 'brown', 'jumps', 'dog', 'A', '.', 'over', 'quick', 'the', 'lazy']
+
+['A', 'quick', 'brown', 'dog', 'jumps', 'over', 'the', 'lazy', 'fox', '.']
+['fox', 'brown', 'jumps', 'dog', 'A', '.', 'over', 'quick', 'the', 'lazy']
+
+ Word order similarity: 0.85, semantic similarity: 0.15
+
+1.0
+['A', 'quick', 'brown', 'dog', '.']
+['dog', 'A', '.', 'quick', 'brown', 'slow']
+
+['A', 'slow', 'brown', 'dog']
+['dog', 'A', '.', 'quick', 'brown', 'slow']
+
+ Word order similarity: 0.643844718719117, semantic similarity: 0.03236273365700023
+
+0.6762074523761172
+
+"""
+
+
+"""
+
+['A', 'quick', 'brown', 'dog', 'jumps', 'over', 'the', 'lazy', 'fox', '.']
+['jumps', 'the', 'lazy', 'brown', 'dog', '.', 'fox', 'quick', 'over', 'A']
+
+['A', 'quick', 'brown', 'dog', 'jumps', 'over', 'the', 'lazy', 'fox', '.']
+['jumps', 'the', 'lazy', 'brown', 'dog', '.', 'fox', 'quick', 'over', 'A']
+
+ Word order similarity: 0.85, semantic similarity: 0.15
+
+1.0
+['A', 'quick', 'brown', 'dog', '.']
+['quick', 'slow', '.', 'brown', 'dog', 'A']
+
+['A', 'slow', 'brown', 'dog']
+['quick', 'slow', '.', 'brown', 'dog', 'A']
+
+ Word order similarity: 0.7172523023946848, semantic similarity: 0.03236273365700023
+
+0.7496150360516851
+
+"""
