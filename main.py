@@ -1,21 +1,11 @@
-from os import fsync
-from pandas import read_csv
 from nltk.corpus import wordnet as wn
 from nltk.corpus import brown
 import math
 import nltk
 import sys
-from nltk.corpus import stopwords
 import numpy as np
 import numpy.linalg as LA
-from sklearn.feature_extraction.text import TfidfVectorizer
-import re
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 from tqdm import tqdm
-from copy import deepcopy
-
-# TODO: Razumeti implementaciju hierarchy_dist i potencijalno popraviti 
     
 
 class Main:
@@ -184,7 +174,7 @@ class Main:
     def get_similarity(self, sentence1, sentence2):
         word_order_similarity = self.DELTA * self.get_word_order_similarity(sentence1, sentence2)
         semantic_similarity = (1 - self.DELTA) * self.get_semantic_similarity(sentence1, sentence2)
-
+        
         return  word_order_similarity + semantic_similarity 
 
 
