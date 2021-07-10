@@ -163,13 +163,11 @@ class Main:
 
         for (id, joined_word) in enumerate(joined_words):
             if joined_word in words:
-                word_order_vector[id] = joined_words.index(joined_word)
+                word_order_vector[words.index(joined_word)] = joined_words.index(joined_word)
             else:
                 most_sym_word, max_sym = self.get_most_similar_word(joined_word, words)
                 word_order_vector[id] = joined_words.index(most_sym_word) if max_sym > self.ETA else 0
         
-        print(f"Word order vector: {word_order_vector}")
-
         return word_order_vector
 
 
@@ -191,6 +189,6 @@ if __name__ == "__main__":
     main = Main()
 
     print(main.get_similarity(str("A quick brown dog jumps over the lazy fox."), 
-                                str('A quick brown fox jumps over the lazy dog.')))
+                                str('A quick brown dog jumps over the lazy fox.')))
 
     print(main.get_similarity(str("A quick brown dog."), str('A slow brown dog')))
