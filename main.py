@@ -12,6 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import re
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from tqdm import tqdm
 
 # TODO: Razumeti implementaciju hierarchy_dist i potencijalno popraviti 
 
@@ -27,10 +28,11 @@ class Main:
 
 
     def info_content(self):
+        print("Calculating word frequencies for Brown Dataset...")
         self.N = 0
         self.brown_freqs = {}
 
-        for sent in brown.sents():
+        for sent in tqdm(brown.sents()):
             for word in sent:
                 word = word.lower()
                 if word not in self.brown_freqs:
@@ -88,7 +90,7 @@ class Main:
 
     def get_hierarchy_dist(self, synset1, synset2):
         if synset1 is None or synset2 is None:
-            return sys.maxsize()
+            return sys.maxsize
         
         if synset1 == synset2:
             h_dist = max([x[1] for x in synset1.hypernym_distances()])
@@ -145,14 +147,14 @@ class Main:
 
 
     def get_semantic_similarity(self, sentence1, sentence2):
-        words1_set = set(nltk.tokenize(sentence1))
-        words2_set = set(nltk.tokenize(sentence2))
+        words1_set = set(nltk.word_tokenize(sentence1))
+        words2_set = set(nltk.word_tokenize(sentence2))
         joined_words_set = words1_set.union(words2_set)
 
         sem_vec1 = self.get_semantic_vector(words1_set, joined_words_set)
         sem_vec2 = self.get_semantic_vector(words2_set, joined_words_set)
 
-        return np.dot(sem_vec1, sem_vec2.T) / (np.linalg.norm(sem_vec1) * np.linalg.norm(sem_vec2))
+        return np.dot(sem_vec1, sem_vec2.T) / (LA.norm(sem_vec1) * LA.norm(sem_vec2))
 
 
     def get_word_order_vector(self, words, joined_words):
@@ -166,6 +168,8 @@ class Main:
                 most_sym_word, max_sym = self.get_most_similar_word(joined_word, words)
                 word_order_vector[id] = joined_words.index(most_sym_word) if max_sym > self.ETA else 0
         
+        print(f"Word order vector: {word_order_vector}")
+
         return word_order_vector
 
 
@@ -173,36 +177,20 @@ class Main:
         words1 = nltk.word_tokenize(sentence1)
         words2 = nltk.word_tokenize(sentence2)
         joined_words = list(set(words1).union(set(words2)))         
-        word_order_vector1 = self.get_word_order_similarity(words1, joined_words)
-        word_order_vector2 = self.get_word_order_similarity(words2, joined_words)
+        word_order_vector1 = self.get_word_order_vector(words1, joined_words)
+        word_order_vector2 = self.get_word_order_vector(words2, joined_words)
 
         return 1 - (LA.norm(word_order_vector1 - word_order_vector2) / LA.norm(word_order_vector1 + word_order_vector2))
 
 
     def get_similarity(self, sentence1, sentence2):
-        return self.DELTA * self.get_word_order_similarity(sentence1, sentence2) * self.get_semantic_similarity(sentence1, sentence2)
+        return self.DELTA * self.get_word_order_similarity(sentence1, sentence2) + (1-self.DELTA) * self.get_semantic_similarity(sentence1, sentence2)
 
 
 if __name__ == "__main__":
-    # main = Main()
-    # print(f"BEST PAIR: {main.get_best_synset_pair('RAM', 'memory')}")
+    main = Main()
 
-    # synsets_word1 = wn.synsets("RAM")
-    # print(synsets_word1[0])
-    # print( set([str(x.name()) for x in synsets_word1[0].lemmas()]))
+    print(main.get_similarity(str("A quick brown dog jumps over the lazy fox."), 
+                                str('A quick brown fox jumps over the lazy dog.')))
 
-    synsets_word1 = wn.synsets("RAM")[0]
-    # fsynset1 = synsets_word1[0]
-    # print(fsynset1.hypernym_distances())
-    # print( set([str(x.name()) for x in fsynset1.lemmas()]))
-    print(synsets_word1.root_hypernyms())
-
-    print()
-
-    synsets_word2 = wn.synsets("memory")[0]
-    # fsynset2 = synsets_word2[0]
-    # print(fsynset2.hypernym_distances())
-    print(synsets_word2.root_hypernyms())
-
-    synsets_word_100 = wn.synsets("number")[0]
-    print(synsets_word_100.root_hypernyms())
+    print(main.get_similarity(str("A quick brown dog."), str('A slow brown dog')))
