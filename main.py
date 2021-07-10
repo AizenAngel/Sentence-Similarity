@@ -13,8 +13,10 @@ import re
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm
+from copy import deepcopy
 
 # TODO: Razumeti implementaciju hierarchy_dist i potencijalno popraviti 
+    
 
 class Main:
     def __init__(self):
@@ -59,7 +61,6 @@ class Main:
         for synset1 in synsets_word1:
             for synset2 in synsets_word2:
                 similarity = wn.path_similarity(synset1, synset2)
-                #print(f"{synset1}, {synset2} {similarity}")
                 if similarity > max_sim:
                     max_sim = similarity
                     best_synsets = (synset1, synset2)
@@ -86,7 +87,7 @@ class Main:
             return 1
 
         return np.exp(-dist * self.ALPHA)
-    
+
 
     def get_hierarchy_dist(self, synset1, synset2):
         if synset1 is None or synset2 is None:
@@ -131,11 +132,11 @@ class Main:
         return sym_word, max_sym
 
 
-    def get_semantic_vector(self, words, joined_words_set):
+    def get_semantic_vector(self, words, joined_words):
         
-        semantic_vector = np.zeros(len(joined_words_set))
+        semantic_vector = np.zeros(len(joined_words))
         
-        for (id, joined_word) in enumerate(joined_words_set):
+        for (id, joined_word) in enumerate(joined_words):
             if joined_word in words:
                 semantic_vector[id] = self.get_info_content_about_word(joined_word) ** 2
             else:
@@ -147,20 +148,17 @@ class Main:
 
 
     def get_semantic_similarity(self, sentence1, sentence2):
-        words1_set = set(nltk.word_tokenize(sentence1))
-        words2_set = set(nltk.word_tokenize(sentence2))
-        joined_words_set = words1_set.union(words2_set)
+        words1 = nltk.word_tokenize(sentence1)
+        words2 = nltk.word_tokenize(sentence2)
+        joined_words = sorted(list( set(words1) | set(words2) ))
 
-        sem_vec1 = self.get_semantic_vector(words1_set, joined_words_set)
-        sem_vec2 = self.get_semantic_vector(words2_set, joined_words_set)
+        sem_vec1 = self.get_semantic_vector(words1, joined_words)
+        sem_vec2 = self.get_semantic_vector(words2, joined_words)
 
         return np.dot(sem_vec1, sem_vec2.T) / (LA.norm(sem_vec1) * LA.norm(sem_vec2))
 
 
     def get_word_order_vector(self, words, joined_words):
-        print(words)
-        print(joined_words)
-        print()
         word_order_vector = np.zeros(len(joined_words))
 
         for (id, joined_word) in enumerate(joined_words):
@@ -176,7 +174,7 @@ class Main:
     def get_word_order_similarity(self, sentence1, sentence2):
         words1 = nltk.word_tokenize(sentence1)
         words2 = nltk.word_tokenize(sentence2)
-        joined_words = list(set(words1).union(set(words2)))         
+        joined_words = sorted(list(set(words1).union(set(words2))))         
         word_order_vector1 = self.get_word_order_vector(words1, joined_words)
         word_order_vector2 = self.get_word_order_vector(words2, joined_words)
 
@@ -187,9 +185,6 @@ class Main:
         word_order_similarity = self.DELTA * self.get_word_order_similarity(sentence1, sentence2)
         semantic_similarity = (1 - self.DELTA) * self.get_semantic_similarity(sentence1, sentence2)
 
-        print(f" Word order similarity: {word_order_similarity}, semantic similarity: {semantic_similarity}")
-        print()
-
         return  word_order_similarity + semantic_similarity 
 
 
@@ -197,59 +192,7 @@ if __name__ == "__main__":
     main = Main()
 
     print(main.get_similarity(str("A quick brown dog jumps over the lazy fox."), 
-                                str('A quick brown dog jumps over the lazy fox.')))
+                                str('A quick brown fox jumps over the lazy dog.')))
 
     print(main.get_similarity(str("A quick brown dog."), str('A slow brown dog')))
 
-"""
-SAME TEST CASES, DIFFERENT OUTPUTS!
-"""
-
-"""
-
-Calculating word frequencies for Brown Dataset...
-100%|███████████████████████████████████████████████████████████████████████████████████████████████████████| 57340/57340 [00:03<00:00, 17662.90it/s]
-['A', 'quick', 'brown', 'dog', 'jumps', 'over', 'the', 'lazy', 'fox', '.']
-['fox', 'brown', 'jumps', 'dog', 'A', '.', 'over', 'quick', 'the', 'lazy']
-
-['A', 'quick', 'brown', 'dog', 'jumps', 'over', 'the', 'lazy', 'fox', '.']
-['fox', 'brown', 'jumps', 'dog', 'A', '.', 'over', 'quick', 'the', 'lazy']
-
- Word order similarity: 0.85, semantic similarity: 0.15
-
-1.0
-['A', 'quick', 'brown', 'dog', '.']
-['dog', 'A', '.', 'quick', 'brown', 'slow']
-
-['A', 'slow', 'brown', 'dog']
-['dog', 'A', '.', 'quick', 'brown', 'slow']
-
- Word order similarity: 0.643844718719117, semantic similarity: 0.03236273365700023
-
-0.6762074523761172
-
-"""
-
-
-"""
-
-['A', 'quick', 'brown', 'dog', 'jumps', 'over', 'the', 'lazy', 'fox', '.']
-['jumps', 'the', 'lazy', 'brown', 'dog', '.', 'fox', 'quick', 'over', 'A']
-
-['A', 'quick', 'brown', 'dog', 'jumps', 'over', 'the', 'lazy', 'fox', '.']
-['jumps', 'the', 'lazy', 'brown', 'dog', '.', 'fox', 'quick', 'over', 'A']
-
- Word order similarity: 0.85, semantic similarity: 0.15
-
-1.0
-['A', 'quick', 'brown', 'dog', '.']
-['quick', 'slow', '.', 'brown', 'dog', 'A']
-
-['A', 'slow', 'brown', 'dog']
-['quick', 'slow', '.', 'brown', 'dog', 'A']
-
- Word order similarity: 0.7172523023946848, semantic similarity: 0.03236273365700023
-
-0.7496150360516851
-
-"""
