@@ -37,8 +37,10 @@ class Main:
 
     def get_info_content_about_word(self, word):
         word = word.lower()
-        return 0 if word not in self.brown_freqs else self.brown_freqs[word] 
-    
+        #return 0 if word not in self.brown_freqs else self.brown_freqs[word] 
+        n = 0 if word not in self.brown_freqs else self.brown_freqs[word]
+        return 1.0 - math.log(n+1) / math.log(self.N + 1)
+
 
     def get_color_for_similarity(self, similarity_measure):
         return "green" if similarity_measure > 0.75 else "yellow" if similarity_measure > 0.4 else  "red"
@@ -134,10 +136,10 @@ class Main:
         
         for (id, joined_word) in enumerate(joined_words):
             if joined_word in words:
-                semantic_vector[id] = self.get_info_content_about_word(joined_word) 
+                semantic_vector[id] = self.get_info_content_about_word(joined_word) ** 2
             else:
                 _, max_sym = self.get_most_similar_word(joined_word, words)
-                max_sym = 0 if max_sym < self.PHI else max_sym
+                max_sym = 0 if max_sym < self.PHI else max_sym ** 2
                 semantic_vector[id] = max_sym 
         
         return semantic_vector
