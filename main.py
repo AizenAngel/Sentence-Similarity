@@ -30,7 +30,7 @@ class Main:
             for word in sent:
                 word = word.lower()
                 if word not in self.brown_freqs:
-                    self.brown_freqs[word] = 1 # TODO  Was 0
+                    self.brown_freqs[word] = 1
                 self.brown_freqs[word] = self.brown_freqs[word] + 1
                 self.N += 1
 
@@ -84,13 +84,14 @@ class Main:
 
         return np.exp(-dist * self.ALPHA)
 
-
+    # calculates hyperbolic tangent value of height from the closest common synset root of the synset1
+    # and synset2 to the overall root of the dataset
     def get_hierarchy_dist(self, synset1, synset2):
         if synset1 is None or synset2 is None:
             return sys.maxsize
         
-        if synset1 == synset2:
-            h_dist = max([x[1] for x in synset1.hypernym_distances()])
+        if synset1 == synset2:     
+            h_dist = max([x[1] for x in synset1.hypernym_distances()]) # distance from current word to the root of the tree, or in this case, to the synset Entity
             return math.tanh(h_dist * self.BETA)
         
         hypernums1  = {x[0]: x[1] for x in synset1.hypernym_distances()}
@@ -115,7 +116,6 @@ class Main:
         return hierarchy_dist_est * length_dist_est
 
 
-
     def get_most_similar_word(self, word, word_corpus):
         max_sym = -1
         sym_word = None
@@ -134,11 +134,11 @@ class Main:
         
         for (id, joined_word) in enumerate(joined_words):
             if joined_word in words:
-                semantic_vector[id] = self.get_info_content_about_word(joined_word) ** 2
+                semantic_vector[id] = self.get_info_content_about_word(joined_word) 
             else:
                 _, max_sym = self.get_most_similar_word(joined_word, words)
                 max_sym = 0 if max_sym < self.PHI else max_sym
-                semantic_vector[id] = max_sym ** 2
+                semantic_vector[id] = max_sym 
         
         return semantic_vector
 
@@ -163,11 +163,6 @@ class Main:
             else:
                 most_sym_word, max_sym = self.get_most_similar_word(joined_word, words)
                 word_order_vector[id] = (words.index(most_sym_word) + 1) if max_sym > self.ETA else 0
-        
-        
-        # print (f"Word order vector: {word_order_vector}")
-        # print (f"Words: {words}")
-        # print()
 
         return word_order_vector
 
@@ -176,9 +171,6 @@ class Main:
         words1 = nltk.word_tokenize(sentence1)
         words2 = nltk.word_tokenize(sentence2)
         joined_words = sorted(list(set(words1).union(set(words2))))  
-        
-        # print (f"Joined words: {joined_words}")   
-        # print ()
 
         word_order_vector1 = self.get_word_order_vector(words1, joined_words)
         word_order_vector2 = self.get_word_order_vector(words2, joined_words)
@@ -190,8 +182,6 @@ class Main:
         word_order_similarity = self.DELTA * self.get_word_order_similarity(sentence1, sentence2)
         semantic_similarity = (1 - self.DELTA) * self.get_semantic_similarity(sentence1, sentence2)
         
-        #print(f"Word order similarity: {word_order_similarity}, semantic_similarity: {semantic_similarity}")
-
         similarity_measure =  semantic_similarity + word_order_similarity
         similarity_measure = 0 if similarity_measure < self.EPS else similarity_measure 
         color_for_similarity = self.get_color_for_similarity(similarity_measure)
