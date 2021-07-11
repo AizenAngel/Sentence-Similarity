@@ -9,7 +9,6 @@ from tqdm import tqdm
 from termcolor import cprint
 
 
-
 class Main:
     def __init__(self):
         self.ALPHA = 0.2
@@ -185,13 +184,4 @@ class Main:
         color_for_similarity = self.get_color_for_similarity(similarity_measure)
         
         cprint(f"Similarity: {similarity_measure}", color_for_similarity) 
-
-
-if __name__ == "__main__":
-    main = Main()
-
-    main.find_similarity(str("A quick brown dog jumps over the lazy fox."), str('A quick brown fox jumps over the lazy dog.'))
-    main.find_similarity(str("A quick brown dog."), str('I play pokemon pig everyday!')) # TODO: Interesting edge case
-    main.find_similarity(str("A quick brown dog."), str('Random combined words not similar, should fail (duh)')) 
-
 
