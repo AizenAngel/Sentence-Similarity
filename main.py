@@ -6,7 +6,9 @@ import sys
 import numpy as np
 import numpy.linalg as LA
 from tqdm import tqdm
-    
+from termcolor import cprint
+
+
 
 class Main:
     def __init__(self):
@@ -37,6 +39,10 @@ class Main:
         word = word.lower()
         return 0 if word not in self.brown_freqs else self.brown_freqs[word] 
     
+
+    def get_color_for_similarity(self, similarity_measure):
+        return "green" if similarity_measure > 0.75 else "yellow" if similarity_measure > 0.4 else  "red"
+
 
     def get_best_synset_pair(self, word1, word2):
         synsets_word1 = wn.synsets(word1)
@@ -171,18 +177,21 @@ class Main:
         return 1 - (LA.norm(word_order_vector1 - word_order_vector2) / LA.norm(word_order_vector1 + word_order_vector2))
 
 
-    def get_similarity(self, sentence1, sentence2):
+    def find_similarity(self, sentence1, sentence2):
         word_order_similarity = self.DELTA * self.get_word_order_similarity(sentence1, sentence2)
         semantic_similarity = (1 - self.DELTA) * self.get_semantic_similarity(sentence1, sentence2)
         
-        return  word_order_similarity + semantic_similarity 
+        similarity_measure =  semantic_similarity + word_order_similarity
+        color_for_similarity = self.get_color_for_similarity(similarity_measure)
+        
+        cprint(f"Similarity: {similarity_measure}", color_for_similarity) 
 
 
 if __name__ == "__main__":
     main = Main()
 
-    print(main.get_similarity(str("A quick brown dog jumps over the lazy fox."), 
-                                str('A quick brown fox jumps over the lazy dog.')))
+    main.find_similarity(str("A quick brown dog jumps over the lazy fox."), str('A quick brown fox jumps over the lazy dog.'))
+    main.find_similarity(str("A quick brown dog."), str('I play pokemon pig everyday!')) # TODO: Interesting edge case
+    main.find_similarity(str("A quick brown dog."), str('Random combined words not similar, should fail (duh)')) 
 
-    print(main.get_similarity(str("A quick brown dog."), str('A slow brown dog')))
 
