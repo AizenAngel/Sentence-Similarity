@@ -49,7 +49,7 @@ where α and β have values in in inteval [0, 1].
 
 ### Semantic similarity of sentences
 Now that we have similarity between words in our sentences, we will describe procedure of determining semantic similarities between sentences.  
-We create joined corpus of words from our sentences. From that corpus, 2 vectors are created. Each index in vector corresponds to special frequency this word has in the `Brown dataset`. For more info, check implementation of 
+We create joined corpus of words from our sentences. From that corpus, 2 vectors are created. Each element in vector corresponds to special frequency this word has in the `Brown dataset`. For more info, check implementation of 
 `get_semantic_vector` function.  
 After these two vectors are formed, we find cosine distance between them, and hence forward we will call this result <code>S<sub>s</sub></code>
 
@@ -76,6 +76,7 @@ Combined formula for calculating similarity between sentences is:
 δ * S<sub>s</sub> + (1 - δ) * S<sub>o</sub> 
 </code>, where δ is hyperparamter.
 
+## Links
+Link to the [original paper](https://www.researchgate.net/publication/232645326_Sentence_Similarity_Based_on_Semantic_Nets_and_Corpus_Statistics#:~:text=The%20semantic%20similarity%20of%20two,database%20and%20from%20corpus%20statistics.&text=Experiments%20on%20two%20sets%20of,significant%20correlation%20to%20human%20intuition.)
 
 
-Calculate similarity between diferent sentences. Based on: [this work](https://www.researchgate.net/publication/232645326_Sentence_Similarity_Based_on_Semantic_Nets_and_Corpus_Statistics#:~:text=The%20semantic%20similarity%20of%20two,database%20and%20from%20corpus%20statistics.&text=Experiments%20on%20two%20sets%20of,significant%20correlation%20to%20human%20intuition.)
