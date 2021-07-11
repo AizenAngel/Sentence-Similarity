@@ -13,9 +13,10 @@ class Main:
     def __init__(self):
         self.ALPHA = 0.2
         self.BETA = 0.45
-        self.ETA = 0.4
+        self.ETA = 0.7
         self.PHI = 0.2
         self.DELTA = 0.85
+        self.EPS = 1e-1
 
         self.info_content()
 
@@ -115,10 +116,10 @@ class Main:
 
 
 
-    def get_most_similar_word(self, word, word_set):
+    def get_most_similar_word(self, word, word_corpus):
         max_sym = -1
         sym_word = None
-        for ref_word in word_set:
+        for ref_word in word_corpus:
             sym = self.get_word_similarity(word, ref_word)
             if sym > max_sym:
                 sym_word = ref_word
@@ -158,18 +159,27 @@ class Main:
 
         for (id, joined_word) in enumerate(joined_words):
             if joined_word in words:
-                word_order_vector[words.index(joined_word)] = joined_words.index(joined_word)
+                word_order_vector[id] = words.index(joined_word) + 1
             else:
                 most_sym_word, max_sym = self.get_most_similar_word(joined_word, words)
-                word_order_vector[id] = joined_words.index(most_sym_word) if max_sym > self.ETA else 0
+                word_order_vector[id] = (words.index(most_sym_word) + 1) if max_sym > self.ETA else 0
         
+        
+        # print (f"Word order vector: {word_order_vector}")
+        # print (f"Words: {words}")
+        # print()
+
         return word_order_vector
 
 
     def get_word_order_similarity(self, sentence1, sentence2):
         words1 = nltk.word_tokenize(sentence1)
         words2 = nltk.word_tokenize(sentence2)
-        joined_words = sorted(list(set(words1).union(set(words2))))         
+        joined_words = sorted(list(set(words1).union(set(words2))))  
+        
+        # print (f"Joined words: {joined_words}")   
+        # print ()
+
         word_order_vector1 = self.get_word_order_vector(words1, joined_words)
         word_order_vector2 = self.get_word_order_vector(words2, joined_words)
 
@@ -180,7 +190,10 @@ class Main:
         word_order_similarity = self.DELTA * self.get_word_order_similarity(sentence1, sentence2)
         semantic_similarity = (1 - self.DELTA) * self.get_semantic_similarity(sentence1, sentence2)
         
+        #print(f"Word order similarity: {word_order_similarity}, semantic_similarity: {semantic_similarity}")
+
         similarity_measure =  semantic_similarity + word_order_similarity
+        similarity_measure = 0 if similarity_measure < self.EPS else similarity_measure 
         color_for_similarity = self.get_color_for_similarity(similarity_measure)
         
         cprint(f"Similarity: {similarity_measure}", color_for_similarity) 
