@@ -13,7 +13,7 @@ class Main:
     def __init__(self):
         self.ALPHA = 0.2
         self.BETA = 0.45
-        self.ETA = 0.7
+        self.ETA = 0.4
         self.PHI = 0.2
         self.DELTA = 0.85
         self.EPS = 1e-1
