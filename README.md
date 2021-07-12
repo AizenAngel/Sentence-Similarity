@@ -20,7 +20,7 @@ So our implementation will be focused on:
 Semantic similarity is one of the bigger chalanges in this implementation.
 We can easily check if 2 words are the same based on their characters, but can we tell when two words are similar (have similar meaning)? Let's take a look at the following graph:
 
-![semantic graph](./Images/semantic_similarity_graph.png)
+![semantic graph](./Images/semantic_similarity_graph.png)  
 Given 2 words `w1` and `w2`, we want to find their semantic similarity `s(w1,w2)`. This can be done by calculating the shortest distances between words in this graph. For example, shortest distance between words *boy* and *girl* is 4 (path from boy: male - person - female - girl).  
 Another example shows that distance between *boy* and *teacher* is 6, but also that distance between *boy* and *animal* is 4. So, word *boy* is semanticly closer to word *animal* than to word *teacher*, which makes no sense. One easy way to fix this, is to take into consideration the depth of the root for two words in question, because words in upper nodes of our graph are more abstract, and have more meanings attached to them. 
 Finally, semantic similarity function will look like this:   
