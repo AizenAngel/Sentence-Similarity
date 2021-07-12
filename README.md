@@ -1,9 +1,5 @@
 # Sentence-Similarity
 
-<!-- ## Introduction
-This repository implements method for calculating similarities between small sentences. Implementation is divided in 2 files: 
-* `main.py` - for implementing functionalities
-* `main.ipynb` - for testing -->
 
 ## Introduction
 Sentences consist of *words*, which are combined and give them different meanings. So we should pay special attention to words. But not only that. Word order is also very important. As stated in the paper, let's look at the following example:  
@@ -11,7 +7,7 @@ Sentences consist of *words*, which are combined and give them different meaning
 * ***A quick brown fox jumps over the lazy dog.***  
 
 Words in these sentences belong to the same corpus and only order of words *fox* and *dog* is reverted. Naive implementation would consider these 2 sentences to be the same because of the words used in them. 
-So our implementation will be focused on: 
+So our implementation will be focusing on: 
 
 * *semantic word similarity*
 * *order similarity*
